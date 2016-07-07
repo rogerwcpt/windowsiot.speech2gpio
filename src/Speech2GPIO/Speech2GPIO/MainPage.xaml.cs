@@ -30,6 +30,8 @@ namespace Speech2GPIO
         private static GpioPin _redPin;
         private static GpioPin _greenPin;
 
+        private static readonly object LedLock = new object();
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -58,12 +60,40 @@ namespace Speech2GPIO
 
             _recognizer.ContinuousRecognitionSession.ResultGenerated += RecognizerResultGenerated;
 
-            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>() { "Turn on red light" }, TagOnRedLight));
-            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>() { "Turn on green light" }, TagOnGreenLight));
-            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>() { "Turn off red light" }, TagOffRedLight));
-            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>() { "Turn off green light" }, TagOffGreenLight));
-            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>() { "Turn on both lights" }, TagOnBothLights));
-            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>() { "Turn off both lights" }, TagOffBothLights));
+            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>()
+            {
+                "Turn on red light", "Turn on the red light", "Turn red light on", "Turn the red light on",
+                "Switch on red light", "Switch on the red light", "Switch red light on", "Switch the red light on"
+
+            }, TagOnRedLight));
+            
+            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>()
+            {
+                "Turn on green light", "Turn on the green light", "Turn green light on", "Turn the green light on",
+                "Switch on green light", "Switch on the green light", "Switch green light on", "Switch the green light on"
+            }, TagOnGreenLight));
+
+            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>()
+            {
+                "Turn off red light", "Turn off the red light", "Turn red light off", "Turn the red light off",
+                "Switch off red light", "Switch off the red light", "Switch red light off", "Switch the red light off"
+            }, TagOffRedLight));
+
+            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>()
+            {
+                "Turn off green light", "Turn off the green light", "Turn green light off", "Turn the green light off",
+                "Switch off green light", "Switch off the green light", "Switch green light off", "Switch the green light off"
+            }, TagOffGreenLight));
+
+            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>()
+            {
+                "Turn on both lights", "Turn on both the lights", "Turn both lights on", "Turn both the lights on"
+            }, TagOnBothLights));
+
+            _recognizer.Constraints.Add(new SpeechRecognitionListConstraint(new List<string>()
+            {
+               "Turn off both lights", "Turn off both the lights", "Turn both lights off", "Turn both the lights off"
+            }, TagOffBothLights));
 
             // Compile grammer
             var compilationResult = await _recognizer.CompileConstraintsAsync();
@@ -107,11 +137,26 @@ namespace Speech2GPIO
         {
             var value = isOn ? GpioPinValue.High : GpioPinValue.Low;
 
-            pin.Write(value);
+            lock (LedLock)
+            {
+                try
+                {
+                    pin.Write(value);
+                }
+                catch
+                {
+                    
+                }
+            }
         }
 
         private void RecognizerResultGenerated(SpeechContinuousRecognitionSession session, SpeechContinuousRecognitionResultGeneratedEventArgs args)
         {
+            if (args.Result == null)
+            {
+                return;
+            }
+
             Debug.WriteLine("Speech recognition status: " + args.Result.Status);
 
             if (args.Result.Status != SpeechRecognitionResultStatus.Success)
@@ -122,6 +167,11 @@ namespace Speech2GPIO
             Debug.WriteLine("Speech Recognised: " + args.Result.Text + " (Confidence: " + args.Result.Confidence + ")");
 
             if (args.Result.Confidence == SpeechRecognitionConfidence.Low) return;
+
+            if (args.Result.Constraint == null)
+            {
+                return;
+            }
 
             switch (args.Result.Constraint.Tag)
             {

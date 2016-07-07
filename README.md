@@ -17,7 +17,7 @@ Uses Windows IOT Core and Voice Commands to control a Raspberry Pi (2 and above)
 #### Tested Hardware
 
 - Official Raspberry Pi WiFi dongl (Broadcom)
-- Microsoft Lifecam 3000 USB Camera
+- Microsoft Lifecam 3000 USB Camera (for the microphone only)
 
 
 ## Notes
