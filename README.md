@@ -16,12 +16,14 @@ Uses Windows IOT Core and Voice Commands to control a Raspberry Pi (2 and above)
 
 #### Tested Hardware
 
-- Official Raspberry Pi WiFi dongl (Broadcom)
+- Official Raspberry Pi WiFi USB adapter (Broadcom)
 - Microsoft Lifecam 3000 USB Camera (for the microphone only)
 
 
 ## Notes
 
 Uses Pins 5 and 27
+
+A grammer file can also be used to load the contraints. 
 
 
