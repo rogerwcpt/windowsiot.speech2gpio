@@ -7,7 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Grid >
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock x:Name="OutputText" FontSize="45" Text="Output Goes Here" Foreground="Yellow" TextAlignment="Center" Margin="0,5"/>
+            <TextBlock x:Name="ConfidenceText" FontSize="45" Text="Confidence" Foreground="White"  TextAlignment="Center" Margin="0,5"/>
+        </StackPanel>
     </Grid>
 </Page>

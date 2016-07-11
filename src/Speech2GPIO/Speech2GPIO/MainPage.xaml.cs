@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Devices.Gpio;
 using Windows.Media.SpeechRecognition;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -145,7 +147,7 @@ namespace Speech2GPIO
                 }
                 catch
                 {
-                    
+                   
                 }
             }
         }
@@ -165,6 +167,14 @@ namespace Speech2GPIO
             }
 
             Debug.WriteLine("Speech Recognised: " + args.Result.Text + " (Confidence: " + args.Result.Confidence + ")");
+
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+
+                ConfidenceText.Text = args.Result.Confidence.ToString();
+                OutputText.Text = args.Result.Text;
+            });
+            
 
             if (args.Result.Confidence == SpeechRecognitionConfidence.Low) return;
 
