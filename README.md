@@ -22,7 +22,7 @@ Uses Windows IOT Core and Voice Commands to control a Raspberry Pi (2 and above)
 
 ## Notes
 
-Uses Pins 5 and 27
+Uses GPIO Pins 5 and 27
 
 A grammer file can also be used to load the contraints. 
 
